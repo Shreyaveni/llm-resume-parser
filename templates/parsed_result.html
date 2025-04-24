@@ -12,6 +12,8 @@
   <div class="top-bar">
     <h2>Extracted Resume Details</h2>
     <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('suggestions') }}" class="btn btn-primary">View Resume Suggestions</a>
+
   </div>
 
   <div class="container">
@@ -53,22 +55,7 @@
       <textarea rows="2" readonly>{{ recommended_job_roles | join(', ') }}</textarea>
     </form>
 
-    {% if resume_score or resume_feedback %}
-    <div class="feedback-section">
-      <h3>Resume Score: {{ resume_score }}/100</h3>
-      <p><strong>Suggestions:</strong></p>
-      <p>{{ resume_feedback.replace('\n', '<br>') | safe }}</p>
-    </div>
-    {% endif %}
-
-    <div class="download-button">
-      <form action="{{ url_for('download_feedback') }}" method="post">
-        <input type="hidden" name="score" value="{{ resume_score }}">
-        <input type="hidden" name="feedback" value="{{ resume_feedback }}">
-        <button type="submit">Download Feedback</button>
-      </form>
-    </div>
-
+    
     {% if job_recommendations %}
     <div class="job-recommendations-section">
       <h2>Top Job Recommendations</h2>

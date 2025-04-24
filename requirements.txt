@@ -4,3 +4,4 @@ PyMuPDF
 requests
 google-generativeai
 Werkzeug
+fpdf

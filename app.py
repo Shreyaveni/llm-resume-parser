@@ -9,7 +9,7 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, s
 from dotenv import load_dotenv
 import google.generativeai as genai
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from flask import send_from_directory
 load_dotenv()
 
 app = Flask(__name__)
@@ -226,6 +226,10 @@ def signup():
             return 'Username already taken. Please choose another one.'
     return render_template('signup.html')
 
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory('uploads', filename)
+
 @app.route('/upload_resume', methods=['POST'])
 def upload_resume():
     if 'resume' not in request.files:
@@ -280,17 +284,42 @@ def upload_resume():
                             suggestions
                         ))
 
+        # Prepare for session storage
         job_role = data.get('recommended_job_roles', [''])[0]
         skills = data.get('technical_skills', [])
         job_recommendations = fetch_job_recommendations(skills, job_role)
 
+        # Save in session for use in different routes
+        session['parsed_data'] = data
+        session['resume_score'] = score
+        session['resume_feedback'] = suggestions
+        session['job_recommendations'] = job_recommendations
+        session['resume_filename'] = resume_file.filename
+
+        return redirect(url_for('parsed_result'))
+
     except Exception as e:
         return jsonify({"error": f"Processing failed: {str(e)}"})
 
-    return render_template('parsed_result.html', **data,
+
+@app.route('/parsed_result')
+def parsed_result():
+    data = session.get('parsed_data', {})
+    job_recommendations = session.get('job_recommendations', [])
+    return render_template('parsed_result.html', **data, job_recommendations=job_recommendations)
+
+@app.route('/suggestions')
+def suggestions():
+    score = session.get('resume_score')
+    feedback = session.get('resume_feedback')
+    filename = session.get('resume_filename')  
+
+    return render_template('suggestions.html',
                            resume_score=score,
-                           resume_feedback=suggestions,
-                           job_recommendations=job_recommendations)
+                           resume_feedback=feedback,
+                           resume_file=filename)
+
+from flask import Response
 
 @app.route('/download_feedback', methods=['POST'])
 def download_feedback():
