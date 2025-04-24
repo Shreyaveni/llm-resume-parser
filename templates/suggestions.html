@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Parsed Resume Details</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style2.css') }}">
+
+</head>
+
+<body>
+
+  <div class="top-bar">
+    <h2>Extracted Resume Details</h2>
+    <a href="{{ url_for('index') }}">Home</a>
+  </div>
+
+  <div class="container">
+    <!-- Left Section -->
+    <div class="left-section">
+      {% if resume_score or resume_feedback %}
+      <div class="feedback-section">
+        <h3>Resume Score: {{ resume_score }}/100</h3>
+        <br>
+        <!-- <p><strong>Suggestions:</strong></p> -->
+        <div>
+          {% for para in resume_feedback.split('\n\n') %}
+            <p style="margin-bottom: 12px; white-space: pre-wrap;">{{ para }}</p>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="download-button">
+        <form action="{{ url_for('download_feedback') }}" method="post">
+          <input type="hidden" name="score" value="{{ resume_score }}">
+          <input type="hidden" name="feedback" value="{{ resume_feedback }}">
+          <button type="submit">Download Feedback</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Section -->
+    <div class="right-section">
+      {% if resume_file %}
+      <iframe src="{{ url_for('uploaded_file', filename=resume_file) }}"></iframe>
+      {% else %}
+      <p>No resume file found.</p>
+      {% endif %}
+    </div>
+  </div>
+
+</body>
+
+</html>
