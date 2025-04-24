@@ -1,0 +1,148 @@
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #eef2f3, #8e9eab);
+  color: #2c3e50;
+  line-height: 1.6;
+}
+
+/* Top Bar */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  color: #2c3e50;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.top-bar h2 {
+  margin: 0;
+  margin-left: 250px;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.top-bar a {
+  text-decoration: none;
+  background-color: #3498db;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.top-bar a:hover {
+  background-color: #2980b9;
+  color: white;
+}
+
+/* Main Container */
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 2em;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Styling */
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 1.1em;
+  color: #333;
+  margin-bottom: 0.5em;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 0.8em;
+  margin-bottom: 1em;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1em;
+  background-color: #f9f9f9;
+  color: #333;
+  outline: none;
+}
+
+input:focus, textarea:focus {
+  border-color: #3498db;
+  background-color: #fff;
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* Feedback Section */
+.feedback-section {
+  margin-top: 2em;
+  padding: 1.5em;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.feedback-section h3 {
+  font-size: 1.5em;
+  color: #2c3e50;
+}
+
+.feedback-section p {
+  color: #666;
+  font-size: 1.1em;
+}
+
+.feedback-section strong {
+  font-weight: bold;
+}
+
+.download-button {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.download-button button {
+  background-color: #3498db;
+  color: white;
+  padding: 10px 25px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.download-button button:hover {
+  background-color: #62acde;
+}
+
+/* Responsive Design for smaller screens */
+@media (max-width: 768px) {
+  .container {
+      padding: 1.5em;
+  }
+
+  .top-bar {
+      padding: 1em;
+  }
+
+  .top-bar a {
+      font-size: 0.9em;
+  }
+}

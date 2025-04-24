@@ -1,0 +1,104 @@
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+  margin-top: 90px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #eef2f3, #8e9eab);
+  color: #2c3e50;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+/* Heading */
+h1 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 30px;
+}
+
+/* Form Styling */
+form {
+  background-color: #ffffffd8;
+  padding: 35px 40px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: left;
+  transition: transform 0.3s ease;
+}
+
+form:hover {
+  transform: scale(1.02);
+}
+
+/* Label Styling */
+label {
+  font-size: 1.1rem;
+  color: #34495e;
+}
+
+/* Input Fields */
+input[type="text"],
+input[type="password"] {
+  font-size: 1rem;
+  padding: 12px;
+  margin: 10px 0 20px;
+  width: 100%;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  background-color: #f9f9f9;
+  transition: border 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: #3498db;
+}
+
+/* Button Styling */
+button {
+  background: linear-gradient(to right, #2980b9, #1c658c);
+  color: white;
+  font-size: 1.1rem;
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background: linear-gradient(to right, #219150, #27ae60);
+  transform: scale(1.05);
+}
+
+button:active {
+  background:#1c658c;
+}
+
+/* Paragraph and Links */
+p {
+  margin-top: 20px;
+  font-size: 1rem;
+  color: #555;
+}
+
+a {
+  color: #1c658c;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: #16a085;
+}

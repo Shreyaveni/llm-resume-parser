@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Parsed Resume Details</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='parsed_style.css') }}">
+</head>
+
+<body>
+
+  <div class="top-bar">
+    <h2>Extracted Resume Details</h2>
+    <a href="{{ url_for('index') }}">Home</a>
+  </div>
+
+  <div class="container">
+    <form>
+      <label>Full Name</label>
+      <input type="text" value="{{ full_name or '' }}">
+
+      <label>Contact Number</label>
+      <input type="text" value="{{ contact_number or '' }}">
+
+      <label>Email Address</label>
+      <input type="text" value="{{ email_address or '' }}" readonly>
+
+      <label>Address</label>
+      <input type="text" value="{{ Address or '' }}" readonly>
+
+      <label>Technical Skills</label>
+      <textarea rows="2" readonly>{{ technical_skills | join(', ') }}</textarea>
+
+      <label>Non-Technical Skills</label>
+      <textarea rows="2" readonly>{{ non_technical_skills | join(', ') }}</textarea>
+
+      <label>Education</label>
+      <textarea rows="3" readonly>{{ education | join('\n') }}</textarea>
+
+      <label>Work Experience</label>
+      <textarea rows="3" readonly>{{ work_experience | join('\n') }}</textarea>
+
+      <label>Certifications</label>
+      <textarea rows="2" readonly>{{ certifications | join(', ') }}</textarea>
+
+      <label>Languages</label>
+      <textarea rows="2" readonly>{{ languages | join(', ') }}</textarea>
+
+      <label>Suggested Resume Category</label>
+      <input type="text" value="{{ suggested_resume_category or '' }}" readonly>
+
+      <label>Recommended Job Roles</label>
+      <textarea rows="2" readonly>{{ recommended_job_roles | join(', ') }}</textarea>
+    </form>
+
+    {% if resume_score or resume_feedback %}
+    <div class="feedback-section">
+      <h3>Resume Score: {{ resume_score }}/100</h3>
+      <p><strong>Suggestions:</strong></p>
+      <p>{{ resume_feedback.replace('\n', '<br>') | safe }}</p>
+    </div>
+    {% endif %}
+
+    <div class="download-button">
+      <form action="{{ url_for('download_feedback') }}" method="post">
+        <input type="hidden" name="score" value="{{ resume_score }}">
+        <input type="hidden" name="feedback" value="{{ resume_feedback }}">
+        <button type="submit">Download Feedback</button>
+      </form>
+    </div>
+
+    {% if job_recommendations %}
+    <div class="job-recommendations-section">
+      <h2>Top Job Recommendations</h2>
+      <ul>
+        {% for job in job_recommendations %}
+        <li style="margin-bottom: 15px;">
+          <h4>{{ job.title }}</h4>
+          <p><strong>Company:</strong> {{ job.company }}</p>
+          <p><strong>Description:</strong> {{ job.snippet|safe }}</p>
+          <a href="{{ job.url }}" target="_blank">Apply Now</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% else %}
+    <p>No job recommendations available at this time.</p>
+    {% endif %}
+
+  </div>
+</body>
+
+</html>

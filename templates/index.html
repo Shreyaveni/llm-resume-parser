@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+</head>
+<body>
+  <!-- Logout Button -->
+  <div style="text-align: right; margin: 10px 20px;">
+    <form action="{{ url_for('logout') }}" method="GET">
+      <button type="submit">Logout</button>
+    </form>
+  </div>
+  <h2>Welcome, {{ username }}!</h2>
+  <p class="welcome-message">You're all set to enhance your resume!</p>
+  
+  <div class="container">
+    <div class="center-box">
+      <form action="/upload_resume" method="POST" enctype="multipart/form-data">
+        <input type="file" name="resume" accept=".pdf" required>
+        <button type="submit">Upload Resume</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>Need help? <a href="/help">Visit our help page</a>.</p>
+  </footer>
+</body>
+</html>
