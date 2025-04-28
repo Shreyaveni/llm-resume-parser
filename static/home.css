@@ -8,93 +8,231 @@
   
   /* Body Styling */
   body {
-    background: linear-gradient(to right, #eef2f3, #8e9eab);
+    background: linear-gradient(120deg, #f8fafc 0%, #e0e7ef 100%);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    color: #333;
+    color: #222;
+  }
+  
+  /* Logout Button */
+  form[action*="logout"] button {
+    background: #fff;
+    color: #2c3e50;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  form[action*="logout"] button:hover {
+    background: #2c3e50;
+    color: #fff;
   }
   
   /* Heading */
   h2 {
     text-align: center;
-    font-size: 2.5rem;
+    font-size: 2.3rem;
     margin: 40px 0 10px;
-    color: #2c3e50;
+    color: #1a2233;
+    letter-spacing: 1px;
+    font-weight: 600;
   }
   
   /* Welcome Message */
   .welcome-message {
     text-align: center;
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     margin-bottom: 30px;
     color: #34495e;
   }
   
-  /* Container Center Box */
+  /* Main Container */
   .container {
     flex-grow: 1;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    gap: 40px;
+    max-width: 1100px;
+    margin: 0 auto 30px auto;
   }
   
   /* Center Box Form */
   .center-box {
-    background-color: #ffffffd6;
+    background: #fff;
     padding: 40px 50px;
-    border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 18px;
+    box-shadow: 0 6px 24px rgba(44, 62, 80, 0.10);
     text-align: center;
-    transition: transform 0.3s ease;
+    min-width: 340px;
+    max-width: 400px;
+    width: 100%;
+    transition: box-shadow 0.3s;
   }
-  
   .center-box:hover {
-    transform: scale(1.02);
+    box-shadow: 0 10px 32px rgba(44, 62, 80, 0.16);
   }
   
   /* Upload Input */
   input[type="file"] {
-    margin-bottom: 20px;
+    margin-bottom: 22px;
     padding: 10px;
-    border: 2px solid #bdc3c7;
+    border: 1.5px solid #d1d5db;
     border-radius: 8px;
-    background-color: #f9f9f9;
+    background-color: #f3f6fa;
     width: 100%;
+    font-size: 1rem;
   }
   
   /* Upload Button */
   button[type="submit"] {
-    padding: 12px 30px;
-    background: linear-gradient(to right, #3498db, #2980b9);
-    color: white;
+    padding: 12px 32px;
+    background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%);
+    color: #fff;
     border: none;
     border-radius: 25px;
-    font-size: 1rem;
+    font-size: 1.08rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.08);
+    transition: background 0.3s, transform 0.2s;
+  }
+  button[type="submit"]:hover {
+    background: linear-gradient(90deg, #1e40af 0%, #2563eb 100%);
+    transform: translateY(-2px) scale(1.04);
   }
   
-  button[type="submit"]:hover {
-    background: linear-gradient(to right, #2980b9, #1c658c);
-    transform: scale(1.05);
+  /* Flex container for main content and sidebar */
+  .main-flex {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    max-width: 1300px;
+    margin: 0 auto 30px auto;
+    width: 100%;
+    min-height: 600px;
+    gap: 0;
+  }
+  
+  /* Main content area */
+  .main-content {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  
+  /* Sidebar: Previously Uploaded Resumes */
+  .previous-resumes {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(44, 62, 80, 0.13), 0 1.5px 6px rgba(30, 64, 175, 0.07);
+    padding: 32px 24px 24px 24px;
+    min-width: 320px;
+    max-width: 370px;
+    width: 100%;
+    margin-top: 18px;
+    margin-right: 32px;
+    max-height: 540px;
+    overflow-y: auto;
+    position: sticky;
+    top: 80px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border: 1.5px solid #e5e7eb;
+    transition: box-shadow 0.2s;
+  }
+  
+  .previous-resumes h3 {
+    font-size: 1.22rem;
+    color: #1e293b;
+    margin-bottom: 18px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    align-self: flex-start;
+  }
+  
+  .previous-resumes ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+  }
+  
+  .previous-resumes li {
+    margin-bottom: 16px;
+    background: linear-gradient(90deg, #f1f5f9 60%, #e0e7ef 100%);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.07);
+    padding: 12px 14px 10px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: box-shadow 0.2s, background 0.2s;
+    border: 1px solid #e5e7eb;
+    position: relative;
+  }
+  
+  .previous-resumes li:hover {
+    box-shadow: 0 6px 18px rgba(44, 62, 80, 0.13);
+    background: linear-gradient(90deg, #e0e7ef 60%, #f1f5f9 100%);
+  }
+  
+  .previous-resumes a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.04rem;
+    transition: color 0.2s;
+    word-break: break-all;
+    margin-bottom: 4px;
+    display: inline-block;
+  }
+  
+  .previous-resumes a:hover {
+    color: #1e40af;
+    text-decoration: underline;
+  }
+  
+  .previous-resumes span {
+    color: #fff;
+    font-size: 0.97rem;
+    background: linear-gradient(90deg, #2563eb 60%, #1e40af 100%);
+    border-radius: 6px;
+    padding: 2px 12px;
+    font-weight: 500;
+    margin-top: 2px;
+    box-shadow: 0 1px 4px rgba(30, 64, 175, 0.10);
+    align-self: flex-end;
+  }
+  
+  .previous-resumes p {
+    color: #888;
+    font-size: 1rem;
+    margin-top: 10px;
+    width: 100%;
+    text-align: center;
   }
   
   /* Footer */
   footer {
-    background-color: #2c3e50;
-    color: white;
+    background: #1a2233;
+    color: #fff;
     text-align: center;
-    padding: 15px 0;
-    font-size: 0.95rem;
+    padding: 18px 0 12px 0;
+    font-size: 1rem;
+    letter-spacing: 0.2px;
+    margin-top: auto;
   }
-  
   footer a {
     color: #1abc9c;
     text-decoration: none;
+    font-weight: 500;
   }
-  
   footer a:hover {
     text-decoration: underline;
   }

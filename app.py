@@ -10,7 +10,19 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import send_from_directory
+from dateutil import parser
+from datetime import datetime
+from bs4 import BeautifulSoup
+import threading
+import atexit
 load_dotenv()
+
+def cleanup():
+    for thread in threading.enumerate():
+        if thread.daemon:
+            thread.join(timeout=1.0)
+
+atexit.register(cleanup)
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "your-secret-key")
@@ -49,6 +61,7 @@ def init_db():
                         recommended_job_roles TEXT,
                         resume_score INTEGER,
                         resume_feedback TEXT,
+                        filename TEXT,
                         FOREIGN KEY (user_id) REFERENCES users(id))''')
 
 def extract_text_from_pdf(pdf_path):
@@ -152,46 +165,67 @@ def resume_feedback_score(resume_json, resume_text):
     score = score_line.replace("Score:", "").replace("/100", "").strip()
     return score, suggestions
 
-def fetch_job_recommendations(skills, job_role):
-    headers = {
-        "x-rapidapi-host": "linkedin-jobs-search.p.rapidapi.com",
-        "x-rapidapi-key": os.getenv("RAPIDAPI_KEY")  # Or hardcode for testing
-    }
+def fetch_job_recommendations(job_role):
+    
+        keywords = job_role
+        print(f"[DEBUG] Search keywords: {keywords}")
 
-    keywords = f"{job_role} {' '.join(skills)}"
+        url = "https://jooble.org/api/"
+        api_key = os.getenv("JOOBLE_API_KEY")
 
-    url = "https://linkedin-jobs-search.p.rapidapi.com/jobs"
-    params = {
-        "keywords": keywords,
-        "location": "India",
-        "page": "1"
-    }
+        if not api_key:
+            print("[ERROR] Jooble API Key not found. Check your .env file.")
+            return []
 
-    try:
-        response = requests.get(url, headers=headers, params=params)
-        data = response.json()
+        headers = {
+            "Content-Type": "application/json"
+        }
 
-        job_listings = []
-        for job in data.get("jobs", [])[:5]:
-            job_listings.append({
-                "company": job.get("company_name"),
-                "title": job.get("title"),
-                "location": job.get("location"),
-                "url": job.get("job_url")
-            })
+        body = {
+            "keywords": keywords,
+            "location": "India"
+        }
 
-        return job_listings
+        try:
+            response = requests.post(url + api_key, headers=headers, json=body)
+            data = response.json()
 
-    except Exception as e:
-        print(f"Job API error: {e}")
-        return []
+            job_listings = []
+            for job in data.get("jobs", [])[:5]:  # show top 5 jobs
+                job_listings.append({
+                    "company": job.get("company", "Unknown Company"),
+                    "title": job.get("title", "Unknown Title"),
+                    "location": job.get("location", "Unknown Location"),
+                    "url": job.get("link", "#")
+                })
+
+            return job_listings
+
+        except Exception as e:
+            print(f"Job API error: {e}")
+            return []
+
     
 # Routes
 @app.route('/')
 def index():
     if 'username' not in session:
         return redirect(url_for('login'))  
-    return render_template('index.html', username=session['username'])
+
+    resumes = []
+    with get_db() as db:
+        user = db.execute('SELECT id FROM users WHERE username = ?', (session['username'],)).fetchone()
+        if user:
+            user_id = user[0]
+            rows = db.execute('SELECT filename, resume_score FROM resumes WHERE user_id = ?', (user_id,)).fetchall()
+            for row in rows:
+                filename, score = row
+                resumes.append({
+                    "filename": filename,
+                    "score": score
+                })
+
+    return render_template('index.html', username=session['username'], resumes=resumes)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -264,8 +298,8 @@ def upload_resume():
                             user_id, full_name, contact_number, email_address, location,
                             technical_skills, non_technical_skills, education, work_experience,
                             certifications, languages, suggested_resume_category,
-                            recommended_job_roles, resume_score, resume_feedback)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                            recommended_job_roles, resume_score, resume_feedback, filename)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                         (
                             user_id,
                             data.get('full_name', ''),
@@ -281,15 +315,14 @@ def upload_resume():
                             data.get('suggested_resume_category', ''),
                             safe_join('recommended_job_roles'),
                             score,
-                            suggestions
+                            suggestions,
+                            resume_file.filename
                         ))
 
-        # Prepare for session storage
         job_role = data.get('recommended_job_roles', [''])[0]
-        skills = data.get('technical_skills', [])
-        job_recommendations = fetch_job_recommendations(skills, job_role)
-
-        # Save in session for use in different routes
+        job_recommendations = fetch_job_recommendations(job_role)
+        print(f"[DEBUG] Number of job recommendations: {len(job_recommendations)}")
+       
         session['parsed_data'] = data
         session['resume_score'] = score
         session['resume_feedback'] = suggestions
@@ -301,12 +334,13 @@ def upload_resume():
     except Exception as e:
         return jsonify({"error": f"Processing failed: {str(e)}"})
 
-
 @app.route('/parsed_result')
 def parsed_result():
     data = session.get('parsed_data', {})
+    experience_level = session.get('experience_level', 'Unknown')
     job_recommendations = session.get('job_recommendations', [])
-    return render_template('parsed_result.html', **data, job_recommendations=job_recommendations)
+
+    return render_template('parsed_result.html', **data,experience_level=experience_level,  job_recommendations=job_recommendations)
 
 @app.route('/suggestions')
 def suggestions():
@@ -319,8 +353,6 @@ def suggestions():
                            resume_feedback=feedback,
                            resume_file=filename)
 
-from flask import Response
-
 @app.route('/download_feedback', methods=['POST'])
 def download_feedback():
     score = request.form.get('score', 'N/A')
@@ -331,6 +363,16 @@ def download_feedback():
     response.headers['Content-Type'] = 'text/plain'
     return response
 
+def add_filename_column():
+    with get_db() as db:
+        try:
+            db.execute("ALTER TABLE resumes ADD COLUMN filename TEXT")
+            db.commit()
+            print("Added filename column to resumes table.")
+        except sqlite3.OperationalError as e:
+            print("Migration error:", e)
+
+
 if __name__ == '__main__':
     init_db()
-    app.run(host="0.0.0.0", port=8001, debug=True)
+    app.run(host="0.0.0.0", port=8001, debug=True, use_reloader=False)

@@ -12,15 +12,34 @@
       <button type="submit">Logout</button>
     </form>
   </div>
-  <h2>Welcome, {{ username }}!</h2>
-  <p class="welcome-message">You're all set to enhance your resume!</p>
-  
-  <div class="container">
-    <div class="center-box">
-      <form action="/upload_resume" method="POST" enctype="multipart/form-data">
-        <input type="file" name="resume" accept=".pdf" required>
-        <button type="submit">Upload Resume</button>
-      </form>
+
+  <div class="main-flex">
+    <div class="main-content">
+      <h2>Welcome, {{ username }}!</h2>
+      <p class="welcome-message">You're all set to enhance your resume!</p>
+      <div class="container">
+        <div class="center-box">
+          <form action="/upload_resume" method="POST" enctype="multipart/form-data">
+            <input type="file" name="resume" accept=".pdf" required>
+            <button type="submit">Upload Resume</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="previous-resumes">
+      <h3>Previously Uploaded Resumes</h3>
+      {% if resumes and resumes|length > 0 %}
+        <ul>
+          {% for resume in resumes %}
+            <li>
+              <a href="{{ url_for('uploaded_file', filename=resume.filename) }}" target="_blank">{{ resume.filename }}</a>
+              <span style="margin-left: 10px;">Score: {{ resume.score }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No resumes uploaded yet.</p>
+      {% endif %}
     </div>
   </div>
 

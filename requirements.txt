@@ -5,3 +5,6 @@ requests
 google-generativeai
 Werkzeug
 fpdf
+pdf2docx 
+python-docx 
+fpdf

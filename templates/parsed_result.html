@@ -25,36 +25,36 @@
       <input type="text" value="{{ contact_number or '' }}">
 
       <label>Email Address</label>
-      <input type="text" value="{{ email_address or '' }}" readonly>
+      <input type="text" value="{{ email_address or '' }}">
 
       <label>Address</label>
-      <input type="text" value="{{ Address or '' }}" readonly>
+      <input type="text" value="{{ Address or '' }}">
 
       <label>Technical Skills</label>
-      <textarea rows="2" readonly>{{ technical_skills | join(', ') }}</textarea>
+      <textarea rows="2" >{{ technical_skills | join(', ') }}</textarea>
 
       <label>Non-Technical Skills</label>
-      <textarea rows="2" readonly>{{ non_technical_skills | join(', ') }}</textarea>
+      <textarea rows="2" >{{ non_technical_skills | join(', ') }}</textarea>
 
       <label>Education</label>
-      <textarea rows="3" readonly>{{ education | join('\n') }}</textarea>
+      <textarea rows="3" >{{ education | join('\n') }}</textarea>
 
       <label>Work Experience</label>
-      <textarea rows="3" readonly>{{ work_experience | join('\n') }}</textarea>
+      <textarea rows="3" >{{ work_experience | join('\n') }}</textarea>
 
       <label>Certifications</label>
-      <textarea rows="2" readonly>{{ certifications | join(', ') }}</textarea>
+      <textarea rows="2" >{{ certifications | join(', ') }}</textarea>
 
       <label>Languages</label>
-      <textarea rows="2" readonly>{{ languages | join(', ') }}</textarea>
+      <textarea rows="2" >{{ languages | join(', ') }}</textarea>
 
       <label>Suggested Resume Category</label>
       <input type="text" value="{{ suggested_resume_category or '' }}" readonly>
 
       <label>Recommended Job Roles</label>
       <textarea rows="2" readonly>{{ recommended_job_roles | join(', ') }}</textarea>
-    </form>
 
+    </form>
     
     {% if job_recommendations %}
     <div class="job-recommendations-section">
@@ -64,7 +64,7 @@
         <li style="margin-bottom: 15px;">
           <h4>{{ job.title }}</h4>
           <p><strong>Company:</strong> {{ job.company }}</p>
-          <p><strong>Description:</strong> {{ job.snippet|safe }}</p>
+          <p><strong>Location:</strong> {{ job.location }}</p>
           <a href="{{ job.url }}" target="_blank">Apply Now</a>
         </li>
         {% endfor %}
@@ -73,8 +73,6 @@
     {% else %}
     <p>No job recommendations available at this time.</p>
     {% endif %}
-
   </div>
 </body>
-
 </html>
