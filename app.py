@@ -10,9 +10,6 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import send_from_directory
-from dateutil import parser
-from datetime import datetime
-from bs4 import BeautifulSoup
 import threading
 import atexit
 load_dotenv()
@@ -191,7 +188,7 @@ def fetch_job_recommendations(job_role):
             data = response.json()
 
             job_listings = []
-            for job in data.get("jobs", [])[:5]:  # show top 5 jobs
+            for job in data.get("jobs", [])[:3]: 
                 job_listings.append({
                     "company": job.get("company", "Unknown Company"),
                     "title": job.get("title", "Unknown Title"),
@@ -225,7 +222,8 @@ def index():
                     "score": score
                 })
 
-    return render_template('index.html', username=session['username'], resumes=resumes)
+    resume_error = session.pop('resume_error', None)
+    return render_template('index.html', username=session['username'], resumes=resumes, resume_error=resume_error)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -280,6 +278,27 @@ def upload_resume():
     try:
         text = extract_text_from_pdf(filepath)
         data = resumes_details(text)
+
+        required_fields = [
+            'full_name', 'contact_number', 'email_address', 'technical_skills',
+            'non_technical_skills', 'education', 
+            'certifications', 'languages'
+        ]
+
+        missing_fields = [
+            field.replace('_', ' ').title()
+            for field in required_fields
+            if not data.get(field) or (isinstance(data.get(field), list) and not any(data.get(field)))
+        ]
+
+        if missing_fields:
+            missing_str = ', '.join(missing_fields)
+            session['resume_error'] = (
+                f"Your resume does not contain the required section(s): {missing_str}. "
+                "Please add these section(s) and try again."
+            )
+            return redirect(url_for('index'))
+
         score, suggestions = resume_feedback_score(data, text)
 
         def safe_join(field):
@@ -321,7 +340,7 @@ def upload_resume():
 
         job_role = data.get('recommended_job_roles', [''])[0]
         job_recommendations = fetch_job_recommendations(job_role)
-        print(f"[DEBUG] Number of job recommendations: {len(job_recommendations)}")
+        # print(f"[DEBUG] Number of job recommendations: {len(job_recommendations)}")
        
         session['parsed_data'] = data
         session['resume_score'] = score
@@ -337,10 +356,9 @@ def upload_resume():
 @app.route('/parsed_result')
 def parsed_result():
     data = session.get('parsed_data', {})
-    experience_level = session.get('experience_level', 'Unknown')
     job_recommendations = session.get('job_recommendations', [])
 
-    return render_template('parsed_result.html', **data,experience_level=experience_level,  job_recommendations=job_recommendations)
+    return render_template('parsed_result.html', **data, job_recommendations=job_recommendations)
 
 @app.route('/suggestions')
 def suggestions():

@@ -23,6 +23,15 @@
             <input type="file" name="resume" accept=".pdf" required>
             <button type="submit">Upload Resume</button>
           </form>
+          {% if resume_error %}
+            <div class="resume-error-message">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" fill="#ffeeba"/>
+                <path d="M12 7v5m0 4h.01" stroke="#856404" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              {{ resume_error }}
+            </div>
+          {% endif %}
         </div>
       </div>
     </div>
