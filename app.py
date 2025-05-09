@@ -104,6 +104,8 @@ def resumes_details(resume_text):
         except Exception as e:
             raise ValueError(f"Failed to parse JSON: {e}")
 
+import json
+
 def resume_feedback_score(resume_json, resume_text):
     prompt = f"""
     You are an expert resume reviewer and career advisor.
@@ -127,7 +129,6 @@ def resume_feedback_score(resume_json, resume_text):
     - Grammar, clarity, spelling, and consistency
     Highlight **missing or weak fields** from the structured data (resume_json) and explain how filling them will improve the resume.
 
-    
     **Advanced Evaluation Factors**
     - Whether accomplishments are shown instead of just responsibilities in work experience
     - Visual appeal and readability (easy to scan for key details)
@@ -139,7 +140,7 @@ def resume_feedback_score(resume_json, resume_text):
 
     Avoid suggesting replacements or expansions for generic technical terms like "DSA", "OOP", "OS", or tools like "VS Code", "Jira", unless they are completely missing from the resume.
 
-    Then give a **realistic score** out of 100 and **3 to 5 actionable suggestions** to improve the resume.
+    Then give a **realistic score** out of 100 and **exactly 5 concise suggestions** (each suggestion should be no more than 2 lines).
 
     Resume JSON:
     {json.dumps(resume_json, indent=2)}
@@ -147,19 +148,35 @@ def resume_feedback_score(resume_json, resume_text):
     Resume Text:
     {resume_text}
 
-    Format your response as follows:
+    Format your response exactly as:
     Score: X/100
     Suggestions:
-    1. ...
-    2. ...
-    3. ...
+    1. First suggestion (max 2 lines)
+    2. Second suggestion (max 2 lines)
+    3. Third suggestion (max 2 lines)
+    4. Fourth suggestion (max 2 lines)
+    5. Fifth suggestion (max 2 lines)
     """
-    
+
     response = model.generate_content(prompt).text.strip()
     lines = response.splitlines()
-    score_line = next((line for line in lines if "Score" in line), "Score: 0/100")
-    suggestions = "\n".join([line for line in lines if not line.startswith("Score:")]).strip()
+    score_line = next((line for line in lines if line.strip().startswith("Score:")), "Score: 0/100")
+    suggestions_start = [i for i, line in enumerate(lines) if line.strip().startswith("Suggestions:")]
+    
+    if suggestions_start:
+        # Extract only the next 3 suggestions
+        suggestion_lines = []
+        i = suggestions_start[0] + 1
+        while len(suggestion_lines) < 4 and i < len(lines):
+            line = lines[i].strip()
+            if line and line[0].isdigit() and line[1] == '.':
+                suggestion_lines.append(line)
+            i += 1
+    else:
+        suggestion_lines = ["1. Not enough data to evaluate.", "2. Not enough data to evaluate.", "3. Not enough data to evaluate."]
+
     score = score_line.replace("Score:", "").replace("/100", "").strip()
+    suggestions = "\n".join(suggestion_lines).strip()
     return score, suggestions
 
 def fetch_job_recommendations(job_role):
